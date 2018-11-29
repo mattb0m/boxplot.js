@@ -109,6 +109,7 @@ class graph {
         }
         
         /* draw x axis */
+        ctx.font = '10px monospace';
         y = h - PAD - TICK_HEIGHT/2 - 0.5;
         ctx.moveTo(PAD, y);
         ctx.lineTo(w - 1 - PAD, y);
