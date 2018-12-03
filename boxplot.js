@@ -2,7 +2,7 @@
 /* TODO: Fix clear button (does nothing) */
 
 class boxplot {
-    constructor(min, q1, q2, q3, max) {
+    constructor(min, q1, q2, q3, max, title) {
         if(min > q1 || q1 > q2 || q2 > q3 || q3 > max)
             throw new Error('BoxPlot: Invalid 5-number summary');
         
@@ -11,6 +11,7 @@ class boxplot {
         this.q2 = q2;
         this.q3 = q3;
         this.max = max;
+        this.title = title ? title : '';
     }
 }
 
@@ -24,24 +25,26 @@ class graph {
         this.draw();
     }
     
-    add_boxplot(min, q1, q2, q3, max) {
-        this.boxplots.push(new boxplot(min, q1, q2, q3, max));
+    add_boxplot(min, q1, q2, q3, max, title) {
+        this.boxplots.push(new boxplot(min, q1, q2, q3, max, title));
         this.draw();
     }
     
     /* draw a box plot at a specified starting pos */
     /* TODO: Validate limits */
     draw_boxplot_at(bp, ox, oy, w, h) {
+        const PAD = 32;
         let y, ctx = this.ctx, uw = w/this.unitsx, min, q1, q2, q3, max;
         min = ((ox + bp.min*uw)|0) + 0.5;
         q1  = ((ox + bp.q1*uw )|0) + 0.5;
         q2  = ((ox + bp.q2*uw )|0) + 0.5;
         q3  = ((ox + bp.q3*uw )|0) + 0.5;
         max = ((ox + bp.max*uw)|0) + 0.5;
-        console.log('OX: ' + ox);
-        console.log('BPMAX: ' + bp.max);
-        console.log('UW: ' + uw);
-        console.log('MAX: ' + max);
+        
+        ctx.font = '12px monospace';
+        ctx.fillText(bp.title, ox, oy + PAD/2);
+        oy += 10 + PAD;
+        h  -= 10 + PAD;
         
         /* min and max */
         ctx.moveTo(min, oy);
@@ -114,7 +117,6 @@ class graph {
             ctx.moveTo(x, h - PAD - TICK_HEIGHT);
             ctx.lineTo(x, h - PAD);
             ctx.fillText((i*this.ticks_at).toString(), x, h - PAD/2);
-            console.log('TICK: ' + i + '@' + x);
         }
         
         /* refresh view */

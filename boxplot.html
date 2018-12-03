@@ -14,17 +14,18 @@
             };
             
             function add() {
-                let min, q1, q2, q3, max;
+                let min, q1, q2, q3, max, ttl;
                 min = parseInt(document.getElementById('min').value);
                 q1 = parseInt(document.getElementById('q1').value);
                 q2 = parseInt(document.getElementById('q2').value);
                 q3 = parseInt(document.getElementById('q3').value);
                 max = parseInt(document.getElementById('max').value);
+                ttl = document.getElementById('ttl_p').value;
                 
                 if(isNaN(min) || isNaN(q1) || isNaN(q2) || isNaN(q3) || isNaN(max))
                     return;
                 
-                g.add_boxplot(min, q1, q2, q3, max);
+                g.add_boxplot(min, q1, q2, q3, max, ttl);
             }
             
             function clear() {
@@ -49,13 +50,15 @@
         </script>
     </head>
     <body>
-        <canvas id="graph" width="960" height="540"></canvas>
-        <p>Title<input type="text" id="ttl" size="64"></p>
+        <canvas id="graph" width="1200" height="600"></canvas>
+        <p>Graph title<input type="text" id="ttl" size="64"></p>
         <table>
             <tr><td>Range</td><td><input type="number" id="rng"></td><td>Ticks</td><td><input type="number" id="tck"></td></tr>
         </table>
         <button type="button" onclick="update_graph()">Update Graph</button>
         
+        
+        <p>Plot title<input type="text" id="ttl_p" size="64"></p>
         <table>
             <tr><td>MIN</td><td><input type="number" id="min"></td></tr>
             <tr><td>Q1</td><td><input type="number" id="q1"></td></tr>
