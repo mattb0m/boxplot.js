@@ -1,4 +1,3 @@
-/* TODO: Make sure there is room on the canvas before adding a new plot */
 /* TODO: Fix clear button (does nothing) */
 
 class boxplot {
@@ -43,8 +42,8 @@ class graph {
         
         ctx.font = '12px monospace';
         ctx.fillText(bp.title, ox, oy + PAD/2);
-        oy += 10 + PAD;
-        h  -= 10 + PAD;
+        oy += 12 + PAD;
+        h  -= 12 + PAD;
         
         /* min and max */
         ctx.moveTo(min, oy);
@@ -84,18 +83,27 @@ class graph {
     draw() {
         const PAD = 32, TICK_HEIGHT = 16, TITLE_H = 16;
         let ctx = this.ctx, w = ctx.canvas.width, h = ctx.canvas.height, x = 0, y = 0;
-        this.clear();
-        
-        /* draw graph title */
-        ctx.font = '16px monospace';
-        this.ctx.fillStyle = '#000';
-        ctx.fillText(this.title, PAD, PAD);
         
         /* calculate space available for plots */
         let plot_w, plot_h, plot_h_single, bplen = this.boxplots.length;
         plot_w = w - 1 - 2*PAD;
         plot_h = h - 1 - 4*PAD - TITLE_H - TICK_HEIGHT;
         plot_h_single = ((plot_h - this.boxplots.length*PAD)/this.boxplots.length)|0;
+        
+        /* resize canvas if insufficient height */
+        if(plot_h_single > 0 && plot_h_single < 64) {
+            ctx.canvas.height += (this.boxplots.length*64 - plot_h);
+            h = ctx.canvas.height;
+            plot_h = h - 1 - 4*PAD - TITLE_H - TICK_HEIGHT;
+            plot_h_single = ((plot_h - this.boxplots.length*PAD)/this.boxplots.length)|0;
+        }
+        
+        this.clear();
+        
+        /* draw graph title */
+        ctx.font = '16px monospace';
+        this.ctx.fillStyle = '#000';
+        ctx.fillText(this.title, PAD, PAD);
         
         /* draw plots */
         ctx.beginPath();
