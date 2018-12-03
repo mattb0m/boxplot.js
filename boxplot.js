@@ -32,7 +32,7 @@ class graph {
     /* draw a box plot at a specified starting pos */
     /* TODO: Validate limits */
     draw_boxplot_at(bp, ox, oy, w, h) {
-        const PAD = 32;
+        const PAD = 32, TITLE_H = 12;
         let y, ctx = this.ctx, uw = w/this.unitsx, min, q1, q2, q3, max;
         min = ((ox + bp.min*uw)|0) + 0.5;
         q1  = ((ox + bp.q1*uw )|0) + 0.5;
@@ -40,10 +40,10 @@ class graph {
         q3  = ((ox + bp.q3*uw )|0) + 0.5;
         max = ((ox + bp.max*uw)|0) + 0.5;
         
-        ctx.font = '12px monospace';
+        ctx.font = TITLE_H + 'px monospace';
         ctx.fillText(bp.title, ox, oy + PAD/2);
-        oy += 12 + PAD;
-        h  -= 12 + PAD;
+        oy += TITLE_H + PAD;
+        h  -= TITLE_H + PAD;
         
         /* min and max */
         ctx.moveTo(min, oy);
@@ -101,7 +101,7 @@ class graph {
         this.clear();
         
         /* draw graph title */
-        ctx.font = '16px monospace';
+        ctx.font = TITLE_H + 'px monospace';
         this.ctx.fillStyle = '#000';
         ctx.fillText(this.title, PAD, PAD);
         
