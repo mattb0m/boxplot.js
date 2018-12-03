@@ -32,49 +32,44 @@ class graph {
     /* draw a box plot at a specified starting pos */
     /* TODO: Validate limits */
     draw_boxplot_at(bp, ox, oy, w, h) {
-        let x, y, ctx = this.ctx, uw = w/this.unitsx;
-        x = ((ox + bp.min*uw)|0) + 0.5;
+        let y, ctx = this.ctx, uw = w/this.unitsx, min, q1, q2, q3, max;
+        min = ((ox + bp.min*uw)|0) + 0.5;
+        q1  = ((ox + bp.q1*uw )|0) + 0.5;
+        q2  = ((ox + bp.q2*uw )|0) + 0.5;
+        q3  = ((ox + bp.q3*uw )|0) + 0.5;
+        max = ((ox + bp.max*uw)|0) + 0.5;
+        console.log('OX: ' + ox);
+        console.log('BPMAX: ' + bp.max);
+        console.log('UW: ' + uw);
+        console.log('MAX: ' + max);
         
-        /* min */
-        ctx.moveTo(x, oy);
-        ctx.lineTo(x, oy + h);
+        /* min and max */
+        ctx.moveTo(min, oy);
+        ctx.lineTo(min, oy + h);
+        ctx.moveTo(max, oy);
+        ctx.lineTo(max, oy + h);
         
-        /* q1 */
-        x = ((ox + bp.q1*uw)|0) + 0.5;
-        ctx.moveTo(x, oy);
-        ctx.lineTo(x, oy + h);
-        
-        /* left whisker */
+        /* whiskers */
         y = (oy + (h/2)|0) + 0.5;
-        ctx.moveTo(((ox + bp.min*uw)|0) + 0.5, y);
-        ctx.lineTo(x, y);
+        ctx.moveTo(min, y);
+        ctx.lineTo(q1, y);
+        ctx.moveTo(q3, y);
+        ctx.lineTo(max, y);
         
-        /* q2 */
-        x = ((ox + bp.q2*uw)|0) + 0.5;
-        ctx.moveTo(x, oy);
-        ctx.lineTo(x, oy + h);
-        
-        /* q3 */
-        x = ((ox + bp.q3*uw)|0) + 0.5;
-        ctx.moveTo(x, oy);
-        ctx.lineTo(x, oy + h);
+        /* quartiles */
+        ctx.moveTo(q1, oy);
+        ctx.lineTo(q1, oy + h);
+        ctx.moveTo(q2, oy);
+        ctx.lineTo(q2, oy + h);
+        ctx.moveTo(q3, oy);
+        ctx.lineTo(q3, oy + h);
         
         /* box */
         y = oy + 0.5;
-        ctx.moveTo((ox + bp.q1*uw)|0, y);
-        ctx.lineTo((ox + bp.q3*uw)|0, y);
-        ctx.moveTo((ox + bp.q1*uw)|0, y + h);
-        ctx.lineTo((ox + bp.q3*uw)|0, y + h);
-        
-        /* right whisker */
-        y = (oy + (h/2)|0) + 0.5;
-        ctx.moveTo((ox + bp.q3*uw)|0, y);
-        ctx.lineTo((ox + bp.max*uw)|0, y);
-        
-        /* max */
-        x = ((ox + bp.max*uw)|0) + 0.5;
-        ctx.moveTo(x, oy);
-        ctx.lineTo(x, oy + h);
+        ctx.moveTo(q1, y);
+        ctx.lineTo(q3, y);
+        ctx.moveTo(q1, y + h);
+        ctx.lineTo(q3, y + h);
     }
     
     clear() {
@@ -101,11 +96,10 @@ class graph {
         
         /* draw plots */
         ctx.beginPath();
-        x = PAD;
         
         for(let i = 0; i < bplen; ++i) {
             y = PAD*2 + TITLE_H + i*(plot_h_single + PAD);
-            this.draw_boxplot_at(this.boxplots[i], x, y, plot_w, plot_h_single);
+            this.draw_boxplot_at(this.boxplots[i], PAD, y, plot_w, plot_h_single);
         }
         
         /* draw x axis */
@@ -115,18 +109,13 @@ class graph {
         ctx.lineTo(w - 1 - PAD, y);
         
         /* draw all ticks but the last */
-        for(let i = 0, tick_count = (this.unitsx/this.ticks_at)|0, tick_spacing = ((w - PAD*2) / tick_count)|0; i < tick_count; ++i) {
-            x = PAD + i*tick_spacing + 0.5;
+        for(let i = 0, tick_count = (this.unitsx/this.ticks_at)|0, uw = plot_w/this.unitsx; i <= tick_count; ++i) {
+            x = ((PAD + i*this.ticks_at*uw)|0) + 0.5;
             ctx.moveTo(x, h - PAD - TICK_HEIGHT);
             ctx.lineTo(x, h - PAD);
             ctx.fillText((i*this.ticks_at).toString(), x, h - PAD/2);
+            console.log('TICK: ' + i + '@' + x);
         }
-        
-        /* draw the last tick */
-        x = w - 0.5 - PAD;
-        ctx.moveTo(x, h - PAD - TICK_HEIGHT);
-        ctx.lineTo(x, h - PAD);
-        ctx.fillText(this.unitsx.toString(), x, h - PAD/2);
         
         /* refresh view */
         ctx.stroke();
